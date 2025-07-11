@@ -54,6 +54,53 @@ userSchema.pre('save', async function(next) {
 
 const User = mongoose.model('User', userSchema);
 
+// --- INICIO MODELO PUNTO ---
+const { Schema: SchemaPunto, model: modelPunto, Types: TypesPunto } = mongoose;
+
+const puntoSchema = new SchemaPunto({
+  tipo: {
+    type: String,
+    enum: ['robo', 'secuestro', 'camara'],
+    required: true
+  },
+  lat: {
+    type: Number,
+    required: true
+  },
+  lng: {
+    type: Number,
+    required: true
+  },
+  titulo: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  descripcion: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  fecha: {
+    type: String,
+    default: new Date().toISOString().split('T')[0]
+  },
+  usuarioId: {
+    type: SchemaPunto.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  direccion: {
+    type: String,
+    trim: true
+  }
+}, {
+  timestamps: true
+});
+
+const Punto = modelPunto('Punto', puntoSchema);
+// --- FIN MODELO PUNTO ---
+
 // Inicializar WebSocket server
 const wsServer = new NotificationWebSocketServer(server, JWT_SECRET);
 
@@ -232,6 +279,43 @@ app.get('/api/notifications', authenticateToken, (req, res) => {
     res.status(500).json({ message: 'Error interno del servidor' });
   }
 });
+
+// --- INICIO RUTAS PUNTOS ---
+// GET todos los puntos
+app.get('/api/puntos', async (req, res) => {
+  try {
+    const puntos = await Punto.find();
+    res.json(puntos);
+  } catch (err) {
+    console.error('Error al obtener puntos:', err);
+    res.status(500).json({ error: 'Error al obtener puntos' });
+  }
+});
+
+// POST crear nuevo punto
+app.post('/api/puntos', async (req, res) => {
+  try {
+    if (!req.body.usuarioId || !TypesPunto.ObjectId.isValid(req.body.usuarioId)) {
+      return res.status(400).json({ error: 'ID de usuario inválido o faltante' });
+    }
+    const puntoData = {
+      ...req.body,
+      usuarioId: new TypesPunto.ObjectId(req.body.usuarioId)
+    };
+    const punto = new Punto(puntoData);
+    const savedPunto = await punto.save();
+    const puntoConUsuario = await Punto.findById(savedPunto._id).populate('usuarioId', 'name email');
+    res.status(201).json(puntoConUsuario);
+  } catch (err) {
+    console.error('Error al guardar punto:', err);
+    if (err.name === 'ValidationError') {
+      const errors = Object.values(err.errors).map((e) => e.message);
+      return res.status(400).json({ errors });
+    }
+    res.status(500).json({ error: 'Error al guardar el punto' });
+  }
+});
+// --- FIN RUTAS PUNTOS ---
 
 // Ruta para ver clientes conectados
 app.get('/api/connected-clients', (req, res) => {
