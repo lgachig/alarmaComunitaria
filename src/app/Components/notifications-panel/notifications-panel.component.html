@@ -1,0 +1,154 @@
+<div class="notifications-panel-container">
+  <!-- Botón para abrir panel -->
+  <button
+    class="panel-trigger"
+    (click)="togglePanel()"
+    [class.has-notifications]="getUnreadCount() > 0">
+    <span class="trigger-icon">🔔</span>
+    <span class="trigger-text">Notificaciones</span>
+
+    <!-- Badge de notificaciones no leídas -->
+    <span
+      class="notification-badge"
+      *ngIf="getUnreadCount() > 0">
+      {{ getUnreadCount() > 99 ? '99+' : getUnreadCount() }}
+    </span>
+  </button>
+
+  <!-- Panel de notificaciones -->
+  <div class="notifications-panel" *ngIf="isVisible">
+    <div class="panel-header">
+      <h3>Historial de Alertas</h3>
+      <button class="close-btn" (click)="togglePanel()">×</button>
+    </div>
+
+    <!-- Filtros y búsqueda -->
+    <div class="panel-controls">
+      <!-- Filtros -->
+      <div class="filters">
+        <select
+          [(ngModel)]="selectedFilter"
+          (change)="onFilterChange()"
+          class="filter-select">
+          <option
+            *ngFor="let filter of filters"
+            [value]="filter.value">
+            {{ filter.icon }} {{ filter.label }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Búsqueda -->
+      <div class="search">
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          (input)="onSearchChange()"
+          placeholder="Buscar notificaciones..."
+          class="search-input">
+      </div>
+    </div>
+
+    <!-- Acciones -->
+    <div class="panel-actions">
+      <button
+        class="btn btn-secondary"
+        (click)="markAllAsRead()"
+        [disabled]="getUnreadCount() === 0">
+        Marcar todas como leídas
+      </button>
+      <button
+        class="btn btn-danger"
+        (click)="clearAll()"
+        [disabled]="notifications.length === 0">
+        Limpiar todo
+      </button>
+    </div>
+
+    <!-- Lista de notificaciones -->
+    <div class="notifications-list">
+      <!-- Loading -->
+      <div class="loading" *ngIf="isLoading">
+        <div class="spinner"></div>
+        <span>Cargando notificaciones...</span>
+      </div>
+
+      <!-- Sin notificaciones -->
+      <div class="empty-state" *ngIf="!isLoading && filteredNotifications.length === 0">
+        <span class="empty-icon">📭</span>
+        <p>No hay notificaciones</p>
+      </div>
+
+      <!-- Notificaciones -->
+      <div
+        class="notification-item"
+        *ngFor="let notification of filteredNotifications"
+        [class.unread]="!notification.isRead"
+        [class]="getAlertTypeClass(notification.metadata?.alertType)">
+
+        <div class="notification-content">
+          <!-- Icono y tipo -->
+          <div class="notification-icon">
+            {{ getAlertTypeIcon(notification.metadata?.alertType) }}
+          </div>
+
+          <!-- Información principal -->
+          <div class="notification-info">
+            <h4 class="notification-title">{{ notification.title }}</h4>
+            <p class="notification-message">{{ notification.message }}</p>
+
+            <!-- Ubicación -->
+            <div class="notification-location" *ngIf="notification?.metadata?.location">
+              <span class="location-icon">📍</span>
+              <span>{{ notification.metadata?.location || '' }}</span>
+            </div>
+
+            <!-- Tiempo -->
+            <span class="notification-time">{{ getTimeAgo(notification.timestamp) }}</span>
+          </div>
+
+          <!-- Estado de lectura -->
+          <div class="notification-status">
+            <span
+              class="read-indicator"
+              [class.unread]="!notification.isRead">
+              {{ notification.isRead ? '✓' : '●' }}
+            </span>
+          </div>
+        </div>
+
+                <!-- Imagen si está disponible -->
+        <div class="notification-image" *ngIf="notification?.metadata?.imageUrl">
+          <img
+            [src]="notification.metadata?.imageUrl || ''"
+            [alt]="notification.title"
+            (error)="onImageError($event)">
+        </div>
+
+        <!-- Acciones -->
+        <div class="notification-actions">
+          <button
+            class="action-btn"
+            (click)="markAsRead(notification)"
+            *ngIf="!notification.isRead"
+            title="Marcar como leída">
+            ✓
+          </button>
+          <button
+            class="action-btn delete"
+            (click)="deleteNotification(notification)"
+            title="Eliminar">
+            🗑️
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Overlay para cerrar panel -->
+  <div
+    class="panel-overlay"
+    *ngIf="isVisible"
+    (click)="togglePanel()">
+  </div>
+</div>

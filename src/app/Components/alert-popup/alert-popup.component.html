@@ -1,0 +1,59 @@
+<div
+  class="alert-popup-container"
+  *ngIf="currentAlert && isVisible"
+  [class]="getAlertTypeClass()">
+
+  <div class="alert-content">
+    <!-- Header con icono y tiempo -->
+    <div class="alert-header">
+      <div class="alert-icon">
+        {{ getAlertTypeIcon() }}
+      </div>
+      <div class="alert-info">
+        <h4 class="alert-title">{{ currentAlert.title }}</h4>
+        <span class="alert-time">{{ getTimeAgo(currentAlert.timestamp) }}</span>
+      </div>
+      <button class="close-btn" (click)="hideAlert()">×</button>
+    </div>
+
+    <!-- Mensaje de la alerta -->
+    <div class="alert-message">
+      {{ currentAlert.message }}
+    </div>
+
+        <!-- Ubicación si está disponible -->
+    <div class="alert-location" *ngIf="currentAlert?.metadata?.location">
+      <span class="location-icon">📍</span>
+      <span>{{ currentAlert.metadata?.location || '' }}</span>
+    </div>
+
+    <!-- Imagen si está disponible -->
+    <div class="alert-image" *ngIf="currentAlert?.metadata?.imageUrl">
+      <img
+        [src]="currentAlert.metadata?.imageUrl || ''"
+        [alt]="currentAlert.title"
+        (error)="onImageError($event)">
+    </div>
+
+    <!-- Botones de acción -->
+    <div class="alert-actions">
+      <button
+        class="btn btn-secondary"
+        (click)="hideAlert()">
+        Cerrar
+      </button>
+      <button
+        class="btn btn-primary"
+        (click)="markAsRead()">
+        Marcar como leída
+      </button>
+    </div>
+  </div>
+
+  <!-- Barra de progreso para auto-ocultar -->
+  <div class="progress-bar">
+    <div class="progress-fill"></div>
+  </div>
+</div>
+
+

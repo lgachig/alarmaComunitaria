@@ -1,0 +1,11 @@
+<div class="mapa-container">
+  <div *ngIf="!isBrowser" class="mapa-loading">Cargando mapa...</div>
+  <div *ngIf="isBrowser" id="mapa" class="mapa"></div>
+
+  <div *ngIf="isBrowser" class="mapa-controls">
+    <button (click)="mostrarRobos()" class="control-button robbery">Robos</button>
+    <button (click)="mostrarZonasSeguras()" class="control-button safe">Zonas Seguras</button>
+    <button (click)="mostrarCamaras()" class="control-button camera">Cámaras</button>
+    <button (click)="limpiarTodo()" class="control-button clear">Limpiar</button>
+  </div>
+</div>

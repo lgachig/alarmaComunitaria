@@ -1,0 +1,29 @@
+
+<div class="dashboard-container">
+  <header class="dashboard-header">
+    <h1>Dashboard</h1>
+    <div class="header-controls">
+      <!-- Componentes de notificación -->
+      <app-notification-button></app-notification-button>
+      <app-notifications-panel></app-notifications-panel>
+      <button (click)="logout()" class="logout-button">Cerrar Sesión</button>
+    </div>
+  </header>
+  <main class="dashboard-content">
+    <div class="welcome-card">
+      <h2>¡Bienvenido!</h2>
+      <p>Has iniciado sesión correctamente.</p>
+      <div *ngIf="userInfo" class="user-info">
+        <p><strong>Email:</strong> {{ userInfo.email }}</p>
+        <p><strong>Nombre:</strong> {{ userInfo.name }}</p>
+      </div>
+    </div>
+    <div class="main-content-row">
+      <app-mapa></app-mapa>
+      <app-alertas></app-alertas>
+    </div>
+  </main>
+
+  <!-- Componente de alerta popup (se muestra automáticamente) -->
+  <app-alert-popup></app-alert-popup>
+</div>

@@ -1,11 +1,27 @@
 import express from 'express';
 import cors from 'cors';
+import http from 'http';
+import jwt from 'jsonwebtoken';
 import { connectDB } from './config/database';
 import { User } from './models/User';
 import puntosRouter from './routes/puntos';
+import notificationsRouter from './routes/notifications';
+
+// Import WebSocket server
+const NotificationWebSocketServer = require('./websocket-server');
 
 const app = express();
+const server = http.createServer(app);
 const PORT = 3000;
+
+// JWT Secret - debería estar en variables de entorno
+const JWT_SECRET = process.env.JWT_SECRET || 'tu_jwt_secret_super_seguro';
+
+// Inicializar WebSocket server
+const wsServer = new NotificationWebSocketServer(server, JWT_SECRET);
+
+// Hacer disponible el servidor WebSocket para las rutas
+app.locals.notificationServer = wsServer;
 
 // Middleware
 app.use(cors());
@@ -13,6 +29,9 @@ app.use(express.json());
 
 // Rutas de puntos
 app.use('/api/puntos', puntosRouter);
+
+// Rutas de notificaciones
+app.use('/api/notifications', notificationsRouter);
 
 // Conectar a MongoDB
 connectDB();
@@ -78,8 +97,20 @@ app.post('/api/auth/login', async (req, res) => {
       return res.status(401).json({ message: 'Credenciales inválidas' });
     }
 
+    // Generar JWT token
+    const token = jwt.sign(
+      {
+        userId: user._id,
+        email: user.email,
+        name: user.name
+      },
+      JWT_SECRET,
+      { expiresIn: '24h' }
+    );
+
     res.json({
       success: true,
+      token,
       user: {
         id: user._id,
         name: user.name,
@@ -105,8 +136,9 @@ app.delete('/api/users/:id', async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
   console.log(`📊 Base de datos: alarmaComunitaria`);
   console.log(`👥 Colección: users`);
+  console.log(`🔌 WebSocket server iniciado`);
 });

@@ -1,0 +1,151 @@
+<div class="notification-button-container">
+  <!-- Botón principal con badge -->
+  <div class="notification-trigger">
+    <button
+      class="notification-btn"
+      (click)="toggleForm()"
+      [class.connected]="isConnected"
+      [class.disconnected]="!isConnected"
+      [disabled]="isSending">
+
+      <span class="btn-icon">📢</span>
+      <span class="btn-text">Enviar Alerta</span>
+
+      <!-- Badge de notificaciones no leídas -->
+      <span
+        class="notification-badge"
+        *ngIf="unreadCount > 0"
+        [class.pulse]="unreadCount > 0">
+        {{ unreadCount > 99 ? '99+' : unreadCount }}
+      </span>
+
+      <!-- Indicador de conexión -->
+      <span
+        class="connection-indicator"
+        [class.connected]="isConnected"
+        [class.disconnected]="!isConnected">
+        {{ isConnected ? '●' : '○' }}
+      </span>
+    </button>
+  </div>
+
+  <!-- Formulario de notificación -->
+  <div class="notification-form" *ngIf="showForm">
+    <div class="form-header">
+      <h3>Nueva Alerta Comunitaria</h3>
+      <button class="close-btn" (click)="toggleForm()">×</button>
+    </div>
+
+    <form (ngSubmit)="sendNotification()" #notificationFormRef="ngForm" novalidate>
+      <!-- Tipo de alerta -->
+      <div class="form-group">
+        <label for="alertType">Tipo de Alerta:</label>
+        <select
+          id="alertType"
+          name="alertType"
+          [(ngModel)]="notificationForm.alertType"
+          class="form-control"
+          [class]="getAlertTypeClass()">
+          <option value="emergencia">🚨 Emergencia</option>
+          <option value="robo">💰 Robo</option>
+          <option value="seguridad">🛡️ Seguridad</option>
+          <option value="general">📢 General</option>
+        </select>
+      </div>
+
+      <!-- Título -->
+      <div class="form-group">
+        <label for="title">Título: <span class="required">*</span></label>
+        <input
+          type="text"
+          id="title"
+          name="title"
+          [(ngModel)]="notificationForm.title"
+          class="form-control"
+          [class.invalid]="notificationForm.title === '' && showForm"
+          placeholder="Título de la alerta"
+          required>
+        <div class="error-message" *ngIf="notificationForm.title === '' && showForm">
+          El título es requerido
+        </div>
+      </div>
+
+      <!-- Mensaje -->
+      <div class="form-group">
+        <label for="message">Mensaje: <span class="required">*</span></label>
+        <textarea
+          id="message"
+          name="message"
+          [(ngModel)]="notificationForm.message"
+          class="form-control"
+          [class.invalid]="notificationForm.message === '' && showForm"
+          placeholder="Descripción detallada de la alerta"
+          rows="3"
+          required></textarea>
+        <div class="error-message" *ngIf="notificationForm.message === '' && showForm">
+          El mensaje es requerido
+        </div>
+      </div>
+
+      <!-- Ubicación -->
+      <div class="form-group">
+        <label for="location">Ubicación: <span class="required">*</span></label>
+        <input
+          type="text"
+          id="location"
+          name="location"
+          [(ngModel)]="notificationForm.location"
+          class="form-control"
+          [class.invalid]="notificationForm.location === '' && showForm"
+          placeholder="Dirección o ubicación específica"
+          required>
+        <div class="error-message" *ngIf="notificationForm.location === '' && showForm">
+          La ubicación es requerida
+        </div>
+      </div>
+
+      <!-- URL de imagen (opcional) -->
+      <div class="form-group">
+        <label for="imageUrl">URL de Imagen (opcional):</label>
+        <input
+          type="url"
+          id="imageUrl"
+          name="imageUrl"
+          [(ngModel)]="notificationForm.imageUrl"
+          class="form-control"
+          placeholder="https://ejemplo.com/imagen.jpg">
+      </div>
+
+      <!-- Botones de acción -->
+      <div class="form-actions">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          (click)="toggleForm()"
+          [disabled]="isSending">
+          Cancelar
+        </button>
+
+                <button
+          type="submit"
+          class="btn btn-primary"
+          [class.loading]="isSending"
+          [disabled]="isSending || !formIsValid">
+          <span *ngIf="!isSending">
+            {{ getAlertTypeIcon() }} Enviar Alerta
+          </span>
+          <span *ngIf="isSending">
+            Enviando...
+          </span>
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Overlay para cerrar formulario -->
+  <div
+    class="form-overlay"
+    *ngIf="showForm"
+    (click)="toggleForm()">
+  </div>
+</div>

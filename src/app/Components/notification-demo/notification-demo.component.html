@@ -1,0 +1,90 @@
+<div class="notification-demo-container">
+  <div class="demo-header">
+    <h1>🚨 Sistema de Alertas Comunitarias</h1>
+    <p>Sistema de notificaciones en tiempo real para la comunidad</p>
+
+    <!-- Indicador de estado de conexión -->
+    <div class="connection-status">
+      <span class="status-indicator" [class.connected]="isConnected" [class.disconnected]="!isConnected">
+        {{ isConnected ? '●' : '○' }}
+      </span>
+      <span class="status-text">
+        {{ isConnected ? 'Conectado' : 'Desconectado' }}
+      </span>
+    </div>
+  </div>
+
+  <div class="demo-content">
+    <!-- Panel de controles -->
+    <div class="controls-panel">
+      <h2>Controles</h2>
+
+      <div class="control-buttons">
+        <!-- Botón de notificación principal -->
+        <div class="control-section">
+          <h3>📢 Enviar Nueva Alerta</h3>
+          <app-notification-button></app-notification-button>
+        </div>
+
+        <!-- Botón de prueba -->
+        <div class="control-section">
+          <h3>🧪 Notificación de Prueba</h3>
+          <button
+            class="test-btn"
+            (click)="sendTestNotification()"
+            [disabled]="!isConnected">
+            Enviar Notificación de Prueba
+          </button>
+        </div>
+
+        <!-- Panel de historial -->
+        <div class="control-section">
+          <h3>📋 Historial de Notificaciones</h3>
+          <app-notifications-panel></app-notifications-panel>
+        </div>
+      </div>
+    </div>
+
+    <!-- Información del sistema -->
+    <div class="system-info">
+      <h2>ℹ️ Información del Sistema</h2>
+
+      <div class="info-cards">
+        <div class="info-card">
+          <h4>🚨 Tipos de Alertas</h4>
+          <ul>
+            <li><strong>Emergencia:</strong> Situaciones críticas que requieren atención inmediata</li>
+            <li><strong>Robo:</strong> Reportes de robos o intentos de robo</li>
+            <li><strong>Seguridad:</strong> Información relacionada con la seguridad comunitaria</li>
+            <li><strong>General:</strong> Anuncios y comunicaciones generales</li>
+          </ul>
+        </div>
+
+        <div class="info-card">
+          <h4>⚡ Características</h4>
+          <ul>
+            <li>Notificaciones en tiempo real via WebSocket</li>
+            <li>Persistencia local de notificaciones</li>
+            <li>Filtrado y búsqueda de alertas</li>
+            <li>Diseño responsive para móviles</li>
+            <li>Integración con autenticación JWT</li>
+          </ul>
+        </div>
+
+        <div class="info-card">
+          <h4>🔧 Tecnologías</h4>
+          <ul>
+            <li><strong>Frontend:</strong> Angular 17 (Standalone Components)</li>
+            <li><strong>Comunicación:</strong> WebSocket + HTTP</li>
+            <li><strong>Estado:</strong> RxJS BehaviorSubject</li>
+            <li><strong>Estilos:</strong> SCSS con diseño responsive</li>
+            <li><strong>Persistencia:</strong> LocalStorage</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Componente de alerta popup (se muestra automáticamente) -->
+  <app-alert-popup></app-alert-popup>
+</div>
