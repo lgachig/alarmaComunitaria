@@ -31,6 +31,7 @@ const sendNotification = (req, res) => {
         imageUrl
       }
     };
+    
     const notifications = wsServer.getNotifications();
     notifications.push(notification);
     wsServer.broadcast({ type: 'new_notification', notification });
