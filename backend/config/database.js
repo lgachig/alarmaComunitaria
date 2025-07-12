@@ -1,8 +1,8 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const MONGODB_URI = 'mongodb+srv://elluis20026:CRUZlucho.com@practica.81cgj.mongodb.net/alarmaComunitaria';
 
-export const connectDB = async (): Promise<void> => {
+const connectDB = async () => {
   try {
     await mongoose.connect(MONGODB_URI);
     console.log('✅ MongoDB conectado exitosamente');
@@ -11,3 +11,7 @@ export const connectDB = async (): Promise<void> => {
     process.exit(1);
   }
 };
+
+const camarasRouter = require('./routes/camaras');
+
+module.exports = { connectDB }; 

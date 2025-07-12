@@ -18,6 +18,24 @@ const NotificationWebSocketServer = require('./websocket-server');
 const puntosRouter = require('./routes/puntos');
 const usersRouter = require('./routes/users');
 const notificationsRouterFactory = require('./routes/notifications');
+const camarasRouter = require('./routes/camaras');
+
+// --- Modelos ---
+const Camara = require('./models/Camara').default || require('./models/Camara');
+const User = require('./models/User').User || require('./models/User');
+
+// --- Funciones auxiliares ---
+const haversine = (lat1, lon1, lat2, lon2) => {
+  const toRad = (x) => x * Math.PI / 180;
+  const R = 6371; // km
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+};
 
 // =========================
 //   CONFIGURACIÓN GLOBAL
@@ -86,6 +104,78 @@ const authenticateToken = (req, res, next) => {
 app.use('/api/puntos', puntosRouter);
 app.use('/api', usersRouter);
 app.use('/api/notifications', notificationsRouterFactory(wsServer, authenticateToken));
+app.use('/api/camaras', camarasRouter);
+
+// Endpoints para eventos de cámara
+app.post('/api/detalle', async (req, res) => {
+  try {
+    const { camera_id, nombre, location, estado, alert_level, video_url, tipo_evento } = req.body;
+    if (!camera_id || !location) {
+      return res.status(400).json({ error: 'camera_id y location son requeridos' });
+    }
+    // Actualizar o registrar cámara
+    const update = {
+      nombre,
+      ubicacion: {
+        latitude: location.latitude,
+        longitude: location.longitude
+      },
+      estado: estado || 'alerta',
+      alert_level: alert_level || 'alta',
+      video_url,
+      ultima_actividad: new Date()
+    };
+    const camara = await Camara.findOneAndUpdate(
+      { camera_id },
+      { $set: update },
+      { upsert: true, new: true }
+    );
+    // Obtener usuarios conectados (simulado: todos los usuarios)
+    const usuarios = await User.find({}, 'name email ubicacion');
+    const usuariosCercanos = usuarios.filter(u => {
+      if (!u.ubicacion) return false;
+      const dist = haversine(
+        location.latitude,
+        location.longitude,
+        u.ubicacion.latitude,
+        u.ubicacion.longitude
+      );
+      return dist < 1.0; // 1 km de radio
+    });
+    // Notificar a usuarios cercanos vía WebSocket
+    wsServer.broadcast({
+      type: 'alerta_camara',
+      camera_id,
+      nombre,
+      ubicacion: location,
+      estado: update.estado,
+      alert_level: update.alert_level,
+      video_url,
+      tipo_evento,
+      usuariosCercanos: usuariosCercanos.map(u => u.email)
+    });
+    res.json({ message: 'Evento de cámara procesado', camara, usuariosCercanos });
+  } catch (err) {
+    res.status(500).json({ error: 'Error procesando evento de cámara', details: err.message });
+  }
+});
+
+app.post('/api/estado', async (req, res) => {
+  try {
+    const { camera_id, estado } = req.body;
+    if (!camera_id || !estado) {
+      return res.status(400).json({ error: 'camera_id y estado son requeridos' });
+    }
+    const camara = await Camara.findOneAndUpdate(
+      { camera_id },
+      { $set: { estado, ultima_actividad: new Date() } },
+      { new: true }
+    );
+    res.json({ message: 'Estado de cámara actualizado', camara });
+  } catch (err) {
+    res.status(500).json({ error: 'Error actualizando estado de cámara', details: err.message });
+  }
+});
 
 // =========================
 //   INICIAR SERVIDOR

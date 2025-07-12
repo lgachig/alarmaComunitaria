@@ -31,7 +31,14 @@ const PuntoSchema = new mongoose.Schema({
   usuarioId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true
+    required: true,
+    validate: {
+      validator: async function(value) {
+        const user = await mongoose.model('User').findById(value);
+        return user !== null;
+      },
+      message: 'El usuario no existe'
+    }
   },
   direccion: {
     type: String,
