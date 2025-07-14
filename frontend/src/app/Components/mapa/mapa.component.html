@@ -1,11 +1,47 @@
 <div class="mapa-container">
-  <div *ngIf="!isBrowser" class="mapa-loading">Cargando mapa...</div>
-  <div *ngIf="isBrowser" id="mapa" class="mapa"></div>
+  <!-- Controles del mapa -->
+  <div class="controles-mapa">
+    <button (click)="mostrarRobos()" class="btn-control">🚨 Robos</button>
+    <button (click)="mostrarZonasSeguras()" class="btn-control">🛡️ Zonas Seguras</button>
+    <button (click)="mostrarCamaras()" class="btn-control">📹 Cámaras</button>
+    <button (click)="limpiarTodo()" class="btn-control">🧹 Limpiar</button>
+  </div>
 
-  <div *ngIf="isBrowser" class="mapa-controls">
-    <button (click)="mostrarRobos()" class="control-button robbery">Robos</button>
-    <button (click)="mostrarZonasSeguras()" class="control-button safe">Zonas Seguras</button>
-    <button (click)="mostrarCamaras()" class="control-button camera">Cámaras</button>
-    <button (click)="limpiarTodo()" class="control-button clear">Limpiar</button>
+  <!-- Información de la cámara de PC -->
+  <div class="info-camara-pc">
+    <div class="card-camara">
+      <h4>🎥 Cámara de PC - Mac</h4>
+      <div class="estado-camara">
+        <strong>Estado:</strong> {{ estadoCamara }}
+      </div>
+      <div class="stats-camara">
+        <span>👥 Personas: {{ statsCamara.personas_detectadas || 0 }}</span>
+        <span>🔫 Armas: {{ statsCamara.armas_detectadas || 0 }}</span>
+      </div>
+      <button (click)="mostrarVideoEnVivo()" class="btn-video" [disabled]="estadoCamara === 'Desconectado'">
+        📹 Ver Video en Vivo
+      </button>
+    </div>
+  </div>
+
+  <!-- Contenedor del mapa -->
+  <div id="mapa" class="mapa"></div>
+
+  <!-- Panel de video en vivo -->
+  <div class="video-panel" *ngIf="mostrarVideo">
+    <div class="video-header">
+      <h3>📹 Video en Vivo - Cámara de PC</h3>
+      <button (click)="ocultarVideo()" class="btn-cerrar">✕</button>
+    </div>
+    <div class="video-container">
+      <img [src]="videoUrl" alt="Video en vivo" class="video-stream">
+      <div class="video-overlay">
+        <div class="video-info">
+          <p><strong>Estado:</strong> {{ estadoCamara }}</p>
+          <p><strong>Personas detectadas:</strong> {{ statsCamara.personas_detectadas || 0 }}</p>
+          <p><strong>Armas detectadas:</strong> {{ statsCamara.armas_detectadas || 0 }}</p>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

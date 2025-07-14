@@ -18,6 +18,10 @@ export class MapaComponent implements OnInit, OnDestroy {
   private marcadores: any[] = [];
   private iconos: any = {};
   private marcadorSeleccionado: any = null;
+  mostrarVideo = false;
+  estadoCamara = 'Conectando...';
+  videoUrl = 'http://localhost:5003/'; // URL del stream de la cámara de PC
+  statsCamara: any = {};
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
@@ -38,6 +42,14 @@ export class MapaComponent implements OnInit, OnDestroy {
           this.centrarEnAlerta(alerta);
         }
       });
+
+      // Verificar estado de la cámara de PC
+      this.verificarEstadoCamara();
+
+      // Actualizar estadísticas cada 5 segundos
+      setInterval(() => {
+        this.actualizarStatsCamara();
+      }, 5000);
     }
   }
 
@@ -76,6 +88,12 @@ export class MapaComponent implements OnInit, OnDestroy {
         iconSize: [32, 32],
         iconAnchor: [16, 32],
         popupAnchor: [0, -32]
+      }),
+      camaraPC: this.L.icon({
+        iconUrl: 'https://cdn-icons-png.flaticon.com/512/126/126483.png',
+        iconSize: [40, 40],
+        iconAnchor: [20, 40],
+        popupAnchor: [0, -40]
       })
     };
   }
@@ -91,7 +109,28 @@ export class MapaComponent implements OnInit, OnDestroy {
         camaras: puntos.filter(p => p.tipo === 'camara')
       };
       this.mostrarRobos();
+      this.agregarMarcadorCamaraPC();
     });
+  }
+
+  // Agregar marcador específico para la cámara de PC
+  agregarMarcadorCamaraPC() {
+    const lat = -0.0626; // Ubicación de la cámara de PC
+    const lng = -78.4516;
+
+    const marcador = this.L.marker([lat, lng], { icon: this.iconos.camaraPC })
+      .addTo(this.map)
+      .bindPopup(`
+        <b>🎥 Cámara de PC - Mac</b><br>
+        <strong>Estado:</strong> <span id="estado-camara">${this.estadoCamara}</span><br>
+        <strong>Personas detectadas:</strong> <span id="personas-detectadas">0</span><br>
+        <strong>Armas detectadas:</strong> <span id="armas-detectadas">0</span><br>
+        <button onclick="window.mostrarVideoEnVivo()" class="btn btn-primary btn-sm">
+          📹 Ver Video en Vivo
+        </button>
+      `);
+
+    this.marcadores.push(marcador);
   }
 
   mostrarRobos() {
@@ -111,6 +150,7 @@ export class MapaComponent implements OnInit, OnDestroy {
         `);
       this.marcadores.push(marcador);
     });
+    this.agregarMarcadorCamaraPC(); // Siempre mostrar la cámara de PC
   }
 
   mostrarZonasSeguras() {
@@ -125,6 +165,7 @@ export class MapaComponent implements OnInit, OnDestroy {
         `);
       this.marcadores.push(marcador);
     });
+    this.agregarMarcadorCamaraPC(); // Siempre mostrar la cámara de PC
   }
 
   mostrarCamaras() {
@@ -139,6 +180,7 @@ export class MapaComponent implements OnInit, OnDestroy {
         `);
       this.marcadores.push(marcador);
     });
+    this.agregarMarcadorCamaraPC(); // Siempre mostrar la cámara de PC
   }
 
   limpiarMarcadores() {
@@ -150,7 +192,6 @@ export class MapaComponent implements OnInit, OnDestroy {
       });
     }
     this.marcadores = [];
-    // No tocar this.marcadorSeleccionado aquí
   }
 
   limpiarTodo() {
@@ -174,5 +215,65 @@ export class MapaComponent implements OnInit, OnDestroy {
       .addTo(this.map)
       .bindPopup(`<b>${alerta.raw?.titulo || ''}</b><br>${alerta.mensaje || ''}`)
       .openPopup();
+  }
+
+  // Verificar estado de la cámara de PC
+  verificarEstadoCamara() {
+    this.http.get('http://localhost:5003/status').subscribe({
+      next: (response: any) => {
+        this.estadoCamara = response.camera_status || 'Conectado';
+        console.log('Estado de cámara de PC:', response);
+      },
+      error: (error) => {
+        this.estadoCamara = 'Desconectado';
+        console.error('Error verificando estado de cámara:', error);
+      }
+    });
+  }
+
+  // Actualizar estadísticas de la cámara
+  actualizarStatsCamara() {
+    this.http.get('http://localhost:5003/stats').subscribe({
+      next: (response: any) => {
+        this.statsCamara = response;
+        console.log('Stats de cámara:', response);
+
+        // Actualizar marcador si existe
+        this.actualizarMarcadorCamaraPC();
+      },
+      error: (error) => {
+        console.error('Error obteniendo stats de cámara:', error);
+      }
+    });
+  }
+
+  // Actualizar marcador de la cámara de PC con nueva información
+  actualizarMarcadorCamaraPC() {
+    // Buscar y actualizar el marcador de la cámara de PC
+    this.marcadores.forEach(marcador => {
+      const latlng = marcador.getLatLng();
+      if (latlng.lat === -0.0626 && latlng.lng === -78.4516) {
+        marcador.setPopupContent(`
+          <b>🎥 Cámara de PC - Mac</b><br>
+          <strong>Estado:</strong> ${this.estadoCamara}<br>
+          <strong>Personas detectadas:</strong> ${this.statsCamara.personas_detectadas || 0}<br>
+          <strong>Armas detectadas:</strong> ${this.statsCamara.armas_detectadas || 0}<br>
+          <button onclick="window.mostrarVideoEnVivo()" class="btn btn-primary btn-sm">
+            📹 Ver Video en Vivo
+          </button>
+        `);
+      }
+    });
+  }
+
+  mostrarVideoEnVivo() {
+    this.mostrarVideo = true;
+    this.estadoCamara = 'Transmitiendo';
+    console.log('Mostrando video en vivo desde cámara de PC');
+  }
+
+  ocultarVideo() {
+    this.mostrarVideo = false;
+    console.log('Ocultando video en vivo');
   }
 }

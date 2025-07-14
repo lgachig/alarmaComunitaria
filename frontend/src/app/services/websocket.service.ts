@@ -27,7 +27,7 @@ export class WebSocketService {
       console.log('🔌 Intentando conectar WebSocket con token:', token ? 'Token presente' : 'Sin token');
 
       // Conectar al WebSocket con el token JWT
-      this.socket = new WebSocket(`ws://localhost:3000/ws?token=${token}`);
+      this.socket = new WebSocket(`ws://localhost:3000/ws?token=${token}`); // BACK-ENDV3
 
       this.socket.onopen = () => {
         console.log('✅ WebSocket conectado exitosamente');

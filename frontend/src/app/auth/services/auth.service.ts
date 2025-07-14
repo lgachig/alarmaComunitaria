@@ -4,7 +4,8 @@ import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { StorageService } from '../../services/storage.service';
 
-const API_URL = 'http://localhost:3000/api/auth';
+// Cambia esta URL si BACK-ENDV3 corre en otro host o puerto
+const API_URL = 'http://localhost:3000/api/auth'; // BACK-ENDV3
 
 @Injectable({
   providedIn: 'root'
@@ -38,12 +39,12 @@ export class AuthService {
 
   // Método para obtener todos los usuarios (para administración)
   getUsers(): Observable<any> {
-    return this.http.get('http://localhost:3000/api/users');
+    return this.http.get('http://localhost:3000/api/users'); // BACK-ENDV3
   }
 
   // Método para eliminar usuario
   deleteUser(userId: string): Observable<any> {
-    return this.http.delete(`http://localhost:3000/api/users/${userId}`);
+    return this.http.delete(`http://localhost:3000/api/users/${userId}`); // BACK-ENDV3
   }
 
   logout(): Observable<any> {

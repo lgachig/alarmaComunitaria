@@ -22,7 +22,7 @@ export class NotificationService {
   public isConnected$ = this.isConnected.asObservable();
   public newNotification$ = this.newNotification.asObservable();
 
-  private readonly API_URL = 'http://localhost:3000/api';
+  private readonly API_URL = 'http://localhost:3000/api'; // BACK-ENDV3
   private readonly STORAGE_KEY = 'notifications';
 
   constructor(

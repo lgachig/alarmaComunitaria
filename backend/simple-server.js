@@ -113,35 +113,43 @@ app.post('/api/detalle', async (req, res) => {
     if (!camera_id || !location) {
       return res.status(400).json({ error: 'camera_id y location son requeridos' });
     }
+    
+    // Verificar si la cámara existe
+    const camara = await Camara.findOne({ camera_id });
+    if (!camara) {
+      return res.status(404).json({ error: 'Cámara no encontrada. Debe registrarse primero.' });
+    }
+    
     // Actualizar o registrar cámara
     const update = {
       nombre,
       ubicacion: {
-        latitude: location.latitude,
-        longitude: location.longitude
+        coordinates: [location.longitude, location.latitude]
       },
       estado: estado || 'alerta',
       alert_level: alert_level || 'alta',
       video_url,
       ultima_actividad: new Date()
     };
-    const camara = await Camara.findOneAndUpdate(
+    
+    await Camara.findOneAndUpdate(
       { camera_id },
-      { $set: update },
-      { upsert: true, new: true }
+      { $set: update }
     );
+    
     // Obtener usuarios conectados (simulado: todos los usuarios)
     const usuarios = await User.find({}, 'name email ubicacion');
     const usuariosCercanos = usuarios.filter(u => {
-      if (!u.ubicacion) return false;
+      if (!u.ubicacion?.coordinates) return false;
       const dist = haversine(
         location.latitude,
         location.longitude,
-        u.ubicacion.latitude,
-        u.ubicacion.longitude
+        u.ubicacion.coordinates[1], // lat
+        u.ubicacion.coordinates[0]  // lon
       );
       return dist < 1.0; // 1 km de radio
     });
+    
     // Notificar a usuarios cercanos vía WebSocket
     wsServer.broadcast({
       type: 'alerta_camara',
@@ -154,6 +162,7 @@ app.post('/api/detalle', async (req, res) => {
       tipo_evento,
       usuariosCercanos: usuariosCercanos.map(u => u.email)
     });
+    
     res.json({ message: 'Evento de cámara procesado', camara, usuariosCercanos });
   } catch (err) {
     res.status(500).json({ error: 'Error procesando evento de cámara', details: err.message });
@@ -162,15 +171,17 @@ app.post('/api/detalle', async (req, res) => {
 
 app.post('/api/estado', async (req, res) => {
   try {
-    const { camera_id, estado } = req.body;
-    if (!camera_id || !estado) {
-      return res.status(400).json({ error: 'camera_id y estado son requeridos' });
+    const { camera_id, status } = req.body;
+    if (!camera_id || !status) {
+      return res.status(400).json({ error: 'camera_id y status son requeridos' });
     }
+    
     const camara = await Camara.findOneAndUpdate(
       { camera_id },
-      { $set: { estado, ultima_actividad: new Date() } },
+      { $set: { estado: status, ultima_actividad: new Date() } },
       { new: true }
     );
+    
     res.json({ message: 'Estado de cámara actualizado', camara });
   } catch (err) {
     res.status(500).json({ error: 'Error actualizando estado de cámara', details: err.message });

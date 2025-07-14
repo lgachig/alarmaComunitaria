@@ -20,6 +20,16 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, 'La contraseña es requerida'],
     minlength: [8, 'La contraseña debe tener al menos 8 caracteres']
+  },
+  ubicacion: {
+    coordinates: {
+      type: [Number], // [longitude, latitude]
+      index: '2dsphere' // Para consultas geoespaciales
+    },
+    address: {
+      type: String,
+      trim: true
+    }
   }
 }, {
   timestamps: true
