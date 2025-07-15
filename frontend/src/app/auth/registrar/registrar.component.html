@@ -1,6 +1,7 @@
+
+
 <div class="register-container">
   <h2 class="register-title">Crear Cuenta</h2>
-
   <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form">
     <!-- Nombre Completo -->
     <div class="form-group">
@@ -97,8 +98,6 @@
       {{ errorMessage }}
     </div>
   </form>
-
-  <!-- Enlace a Login -->
   <div class="login-link">
     ¿Ya tienes una cuenta? <a routerLink="/login">Inicia Sesión</a>
   </div>

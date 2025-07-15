@@ -28,6 +28,8 @@ import { AuthService } from '../../auth/services/auth.service';
 export class DashboardComponent implements OnInit {
   userInfo: any = null;
   isConnected = false;
+  isPanicPulsing = false;
+  private panicPulseTimeout: any = null;
 
   constructor(
     private storageService: StorageService,
@@ -56,5 +58,16 @@ export class DashboardComponent implements OnInit {
     this.storageService.removeItem('auth_token');
     this.storageService.removeItem('user');
     window.location.href = '/login';
+  }
+
+  onPanicClick() {
+    alert('¡Botón de pánico presionado!');
+    this.isPanicPulsing = true;
+    if (this.panicPulseTimeout) {
+      clearTimeout(this.panicPulseTimeout);
+    }
+    this.panicPulseTimeout = setTimeout(() => {
+      this.isPanicPulsing = false;
+    }, 10000); // 10 segundos
   }
 }

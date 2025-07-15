@@ -1,7 +1,17 @@
 
 <div class="dashboard-container">
   <header class="dashboard-header">
+<<<<<<< HEAD
     <h1>Dashboard</h1>
+=======
+    <div class="header-title-group">
+      <img src="./.././../../assets/images/" alt="Logo" class="header-logo" />
+      <div class="header-title-text">
+        <h1>Kuntur</h1>
+        <span class="header-subtitle">Alarma Comunitaria</span>
+      </div>
+    </div>
+>>>>>>> 83b7405 (Cambiado el diseno, con la paleta)
     <div class="header-controls">
       <!-- Componentes de notificación -->
       <app-notification-button></app-notification-button>
@@ -10,20 +20,34 @@
     </div>
   </header>
   <main class="dashboard-content">
-    <div class="welcome-card">
-      <h2>¡Bienvenido!</h2>
-      <p>Has iniciado sesión correctamente.</p>
-      <div *ngIf="userInfo" class="user-info">
-        <p><strong>Email:</strong> {{ userInfo.email }}</p>
-        <p><strong>Nombre:</strong> {{ userInfo.name }}</p>
+    <div class="main-equal-grid">
+      <div class="equal-col">
+        <div class="panic-btn-container">
+          <button
+            class="panic-btn"
+            [class.panic-pulse-active]="isPanicPulsing"
+            (click)="onPanicClick()"
+          >
+            <span class="panic-circle">
+              <!-- Puedes usar un SVG de alerta aquí -->
+              <svg class="panic-icon-svg" width="40" height="40" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="12" fill="#fff"/><path d="M12 7v5" stroke="#ff4d4f" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="16" r="1" fill="#ff4d4f"/></svg>
+            </span>
+            <span class="panic-text">Botón de Pánico</span>
+          </button>
+        </div>
+      </div>
+      <div class="equal-col">
+        <div class="mapa-equal-card">
+          <app-mapa></app-mapa>
+        </div>
+      </div>
+      <div class="equal-col">
+        <div class="alertas-equal-card">
+          <app-alertas></app-alertas>
+        </div>
       </div>
     </div>
-    <div class="main-content-row">
-      <app-mapa></app-mapa>
-      <app-alertas></app-alertas>
-    </div>
   </main>
-
   <!-- Componente de alerta popup (se muestra automáticamente) -->
   <app-alert-popup></app-alert-popup>
 </div>

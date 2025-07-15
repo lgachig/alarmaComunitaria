@@ -45,6 +45,7 @@ export interface Alerta {
     </div>
   `,
   styles: [
+<<<<<<< HEAD
     `.alertas-container { background-color: #f5f5f5; border-radius: 8px; padding: 1rem; font-family: 'Arial', sans-serif; max-width: 400px; margin: 0 auto; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
     h2 { color: #333; text-align: center; margin-bottom: 1.5rem; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 1px; }
     .alertas-filtros { display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 1rem; }
@@ -62,6 +63,134 @@ export interface Alerta {
     .hora { color: #7f8c8d; font-weight: normal; }
     .alerta-content p { margin: 0.2rem 0; }
     .ubicacion { font-style: italic; color: #3498db; }
+=======
+    `.alertas-container {
+      background: white;
+      border-radius: 12px;
+      padding: 0.5rem 0.5rem 0.5rem 0.5rem;
+      font-family: 'Arial', sans-serif;
+      box-shadow: 0 8px 32px rgba(106, 13, 173, 0.15);
+      border: 1px solid rgba(106, 13, 173, 0.1);
+      width: 100%;
+      height: 100%;
+      max-width: none;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      box-sizing: border-box;
+      align-items: stretch;
+      justify-content: flex-start;
+    }
+    h2 {
+      color: var(--primary);
+      text-align: center;
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 700;
+    }
+    .alertas-filtros {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .alertas-filtros button {
+      padding: 0.5rem 1rem;
+      border: 2px solid rgba(106, 13, 173, 0.1);
+      border-radius: 8px;
+      background: var(--background-light);
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--text-secondary);
+      transition: all 0.3s ease;
+    }
+    .alertas-filtros button:hover {
+      background: rgba(106, 13, 173, 0.05);
+      border-color: var(--primary);
+      transform: translateY(-1px);
+    }
+    .alertas-filtros button.active {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      border-color: var(--primary);
+      box-shadow: 0 4px 12px rgba(106, 13, 173, 0.3);
+    }
+    .alertas-list-scroll {
+      flex: 1 1 0;
+      max-height: none;
+      height: 100%;
+      overflow-y: auto;
+      min-height: 0;
+      width: 100%;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+    }
+    .alertas-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+      height: 100%;
+      min-height: 0;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .alerta {
+      background-color: white;
+      border-radius: 8px;
+      padding: 0.7rem 0.7rem;
+      border-left: 4px solid #e2e8f0;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(106, 13, 173, 0.1);
+      box-sizing: border-box;
+      width: 100%;
+      min-width: 0;
+      word-break: break-word;
+    }
+    .alerta:hover {
+      background: var(--background-light);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(106, 13, 173, 0.1);
+    }
+    .alerta-activa {
+      border-left-color: var(--danger);
+      border-color: rgba(227, 52, 47, 0.2);
+    }
+    .zona-segura {
+      border-left-color: var(--success);
+      border-color: rgba(56, 193, 114, 0.2);
+    }
+    .alerta-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.3rem;
+      font-weight: 600;
+      font-size: 0.98rem;
+    }
+    .alerta-activa .alerta-header {
+      color: var(--danger);
+    }
+    .zona-segura .alerta-header {
+      color: var(--success);
+    }
+    .hora {
+      color: var(--text-secondary);
+      font-weight: normal;
+    }
+    .alerta-content p {
+      margin: 0.15rem 0;
+      color: var(--text-primary);
+      font-size: 0.97rem;
+    }
+    .ubicacion {
+      font-style: italic;
+      color: var(--primary);
+      font-weight: 500;
+    }
+>>>>>>> 83b7405 (Cambiado el diseno, con la paleta)
   `]
 })
 export class AlertasComponent implements OnInit {

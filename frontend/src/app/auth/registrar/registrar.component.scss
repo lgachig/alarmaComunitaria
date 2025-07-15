@@ -1,17 +1,52 @@
+body, :host {
+  width: 100vw;
+  height: 100vh;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--background-light);
+}
+.register-root, .register-main, .register-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 100vh;
+}
 .register-container {
+<<<<<<< HEAD
   max-width: 500px;
   margin: 2rem auto;
   padding: 2.5rem;
   border-radius: 10px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
   background-color: #ffffff;
+=======
+  max-width: 400px;
+  margin: 50px auto;
+  padding: 30px;
+  border: 1px solid rgba(106, 13, 173, 0.2);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(106, 13, 173, 0.15);
+  background-color: white;
+>>>>>>> 83b7405 (Cambiado el diseno, con la paleta)
 }
-
 .register-title {
   text-align: center;
+<<<<<<< HEAD
   color: #2c3e50;
   margin-bottom: 1.8rem;
   font-size: 1.8rem;
+=======
+  margin-bottom: 30px;
+  color: var(--primary);
+  font-size: 28px;
+  font-weight: 700;
+>>>>>>> 83b7405 (Cambiado el diseno, con la paleta)
 }
 
 .register-form {
@@ -149,6 +184,38 @@
 
 .login-link a:hover {
   text-decoration: underline;
+}
+
+.login-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+.login-logo {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(106, 13, 173, 0.08);
+  margin-bottom: 0.7rem;
+}
+.login-title {
+  font-size: 2.1rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin: 0;
+  letter-spacing: 1px;
+  font-family: 'Inter', 'Poppins', 'Montserrat', 'Segoe UI', 'Roboto', Arial, sans-serif;
+}
+.login-subtitle {
+  font-size: 1.08rem;
+  color: #b0b0b0;
+  font-weight: 400;
+  margin-top: 0.2rem;
+  letter-spacing: 0.5px;
+  font-family: 'Inter', 'Poppins', 'Montserrat', 'Segoe UI', 'Roboto', Arial, sans-serif;
 }
 
 /* Responsive */
